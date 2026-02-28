@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0e0e">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pro Futures Risk Calculator</title>
+<style>
+body { font-family: Arial; padding:20px; background:#0e0e0e; color:white;}
+input, select, button { width:100%; padding:10px; margin:6px 0; font-size:16px;}
+button { background:#00c853; color:white; border:none;}
+.result { margin-top:20px; font-size:16px; line-height:1.6;}
+.green { color:#00e676; }
+.red { color:#ff5252; }
+</style>
+</head>
+<body>
+
+<h2>Pro Futures Risk Calculator</h2>
+
+<select id="direction">
+<option value="long">LONG</option>
+<option value="short">SHORT</option>
+</select>
+
+<input type="number" id="entry" placeholder="Entry Price">
+<input type="number" id="tp" placeholder="Take Profit">
+<input type="number" id="sl" placeholder="Stop Loss">
+
+<input type="number" id="account" placeholder="Account Size (USDT)">
+<input type="number" id="riskPercent" placeholder="Risk % per trade (vd: 2)" value="">
+<input type="number" id="leverage" placeholder="Leverage" value="">
+
+<button onclick="calculate()">CALCULATE</button>
+
+<div class="result" id="output"></div>
+
+<script>
+function calculate() {
+
+let dir = document.getElementById("direction").value;
+let entry = parseFloat(document.getElementById("entry").value);
+let tp = parseFloat(document.getElementById("tp").value);
+let sl = parseFloat(document.getElementById("sl").value);
+let account = parseFloat(document.getElementById("account").value);
+let riskPercentInput = parseFloat(document.getElementById("riskPercent").value);
+let lev = parseFloat(document.getElementById("leverage").value);
+
+if ([entry,tp,sl,account,riskPercentInput,lev].some(isNaN)) {
+document.getElementById("output").innerHTML = "Nhập đầy đủ thông tin.";
+return;
+}
+
+let riskCapital = account * riskPercentInput / 100;
+
+let priceRisk;
+let priceReward;
+
+if (dir === "long") {
+priceRisk = entry - sl;
+priceReward = tp - entry;
+} else {
+priceRisk = sl - entry;
+priceReward = entry - tp;
+}
+
+if (priceRisk <= 0) {
+document.getElementById("output").innerHTML = "Stop Loss không hợp lệ.";
+return;
+}
+
+let positionSize = riskCapital / priceRisk;
+let positionValue = positionSize * entry;
+let marginUsed = positionValue / lev;
+
+let rr = priceReward / priceRisk;
+let potentialProfit = priceReward * positionSize;
+
+document.getElementById("output").innerHTML =
+"<span class='green'>Risk Capital:</span> $" + riskCapital.toFixed(2) + "<br>" +
+"<span class='green'>Position Size:</span> " + positionSize.toFixed(4) + " BTC<br>" +
+"<span class='green'>Position Value:</span> $" + positionValue.toFixed(2) + "<br>" +
+"<span class='green'>Margin Used:</span> $" + marginUsed.toFixed(2) + "<br><br>" +
+
+"<span class='green'>Potential Profit:</span> $" + potentialProfit.toFixed(2) + "<br>" +
+"<span class='red'>Potential Loss:</span> $" + riskCapital.toFixed(2) + "<br>" +
+"<b>R:R = 1 : " + rr.toFixed(2) + "</b>";
+}
+</script>
+
+</body>
+</html>

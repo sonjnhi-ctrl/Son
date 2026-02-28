@@ -1,0 +1,15 @@
+{
+  "name": "Risk Calculator Pro",
+  "short_name": "RiskPro",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0e0e0e",
+  "theme_color": "#0e0e0e",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
