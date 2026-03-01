@@ -321,59 +321,52 @@ cumulativeProfit:cumulativeProfit
 let winChart=new Chart(document.getElementById("winChart"),{
 type:"bar",
 data:{
-labels:["Win","Loss"],
-datasets:[{
-data:[0,0],
-backgroundColor:["#00e676","#ff5252"],
-barThickness:30
-}]
+    labels:["Win","Loss"],
+    datasets:[{
+        data:[0,0],
+        backgroundColor:["#00e676","#ff5252"],
+        barThickness:30
+    }]
 },
 options:{
-plugins:{
-legend:{display:false},
-tooltip:{enabled:false}
-},
-scales:{
-y:{
-title:{display:true,text:"Percentage (%)"},
-min:0,
-max:100
-},
-x:{
-title:{display:true,text:"Result"}
-}
-},
-animation:{
-    onComplete:function(){
-        const chart=this;
-        const ctx=chart.ctx;
+    plugins:{
+        legend:{display:false},
+        tooltip:{enabled:false}
+    },
+    scales:{
+        y:{
+            title:{display:true,text:"Percentage (%)"},
+            min:0,
+            max:100
+        },
+        x:{
+            title:{display:true,text:"Result"}
+        }
+    },
+    animation:{
+        onComplete:function(){
+            const chart=this;
+            const ctx=chart.ctx;
 
-        ctx.save();
-        ctx.font="11px Arial";
-        ctx.textAlign="center";
+            ctx.save();
+            ctx.font="11px Arial";
+            ctx.textAlign="center";
 
-        chart.data.datasets.forEach((dataset,i)=>{
-            chart.getDatasetMeta(i).data.forEach((bar,index)=>{
+            chart.data.datasets.forEach((dataset,i)=>{
+                chart.getDatasetMeta(i).data.forEach((bar,index)=>{
+                    let value=dataset.data[index];
 
-                let value=dataset.data[index];
+                    ctx.fillStyle="#ffffff";
+                    let text=value.toFixed(1)+"%";
 
-                ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
-
-                let text=(value>0?"+":"")+value.toFixed(2)+"$";
-
-                // nếu dương → hiện phía trên cột
-                // nếu âm → hiện phía dưới cột
-                let yPosition=value>=0 ? bar.y-8 : bar.y+15;
-
-                ctx.fillText(text,bar.x,yPosition);
+                    ctx.fillText(text,bar.x,bar.y-8);
+                });
             });
-        });
 
-        ctx.restore();
-    }
-}
+            ctx.restore();
         }
     }
+}
 });
 
 // PROFIT CHART
