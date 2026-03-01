@@ -102,13 +102,25 @@ padding:10px;
 border-radius:8px;
 }
 
-canvas{
-margin-top:20px;
-background:#111;
-padding:10px;
-border-radius:8px;
-height:250px;
+/* PROFIT CHART */
+#profitChart{
+    margin-top:20px;
+    background:#111;
+    padding:10px;
+    border-radius:8px;
+    height:250px;
 }
+
+/* WINRATE CHART */
+.winrate-wrapper{
+    width:200px;
+    margin:0 auto;
+}
+
+#winChart{
+    height:150px;
+}
+
 </style>
 </head>
 
@@ -174,7 +186,9 @@ Trades: <span id="totalTrades">0</span>
 <div id="output"></div>
 
 <h3>Winrate Chart</h3>
-<canvas id="winChart" height="150"></canvas>
+<div class="winrate-wrapper">
+    <canvas id="winChart"></canvas>
+</div>
 
 <h3>Profit Chart</h3>
 <div id="profitWrapper" class="chart-wrapper" style="height:260px;">
