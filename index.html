@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Pro Futures Risk Calculator</title>
+<title> Futures Risk Calculator V1 ©Son </title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -147,10 +147,10 @@ Trades: <span id="totalTrades">0</span>
 <div id="output"></div>
 
 <h3>Winrate Chart</h3>
-<canvas id="winChart" height="120"></canvas>
+<canvas id="winChart" height="150"></canvas>
 
 <h3>Profit Chart</h3>
-<canvas id="profitChart" height="250"></canvas>
+<canvas id="profitChart" height="200"></canvas>
 
 <h3>Trade History</h3>
 <div id="history"></div>
@@ -436,7 +436,7 @@ let value=dataset.data[index];
 
 ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
 
-let text=(value>0?"+":"")+value.toFixed(2)+"$";
+let text = (value>0?"+":"") + Math.round(value) + "$";
 
 //  nếu dương → vẽ phía trên cột
 if(value>=0){
