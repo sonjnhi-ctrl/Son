@@ -384,7 +384,9 @@ data:{
     datasets:[{
     data:[0,0],
     backgroundColor:["#00e676","#ff5252"],
-    barThickness: 18
+    barThickness: 18,
+    categoryPercentage: 0.4,
+    barPercentage: 1
 }]
 },
 options:{
@@ -402,10 +404,13 @@ options:{
         max:100
     },
     x:{
-        offset:false,
-        grid:{display:false},
-        title:{display:true,text:"Result"}
-    }
+    offset:true,
+    grid:{display:false},
+    ticks:{
+        padding:10
+    },
+    title:{display:true,text:"Result"}
+}
 },
     animation:{
         onComplete:function(){
