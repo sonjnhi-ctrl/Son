@@ -414,7 +414,7 @@ beginAtZero:true,
 title:{display:true,text:"Cumulative Profit (USDT)"}
 },
 x:{
-title:{display:true,text:"Trade #"}
+title:{display:true,text:"Number"}
 }
 },
 
@@ -432,7 +432,8 @@ let value=dataset.data[index];
 ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
 
 // hiển thị + hoặc - trước số
-let text=(value>0?"+":"")+value.toFixed(2)+"$";
+let rounded = Math.round(value);
+let text = (rounded > 0 ? "+" : "") + rounded + "$";
 
 ctx.fillText(text,bar.x,bar.y-5);
 });
