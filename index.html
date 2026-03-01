@@ -204,7 +204,16 @@ updateCharts();
 
 function resetWallet(){
 localStorage.clear();
-location.reload();
+
+wallet=0;
+wins=0;
+losses=0;
+profitHistory=[];
+cumulativeProfit=0;
+
+updateStats();
+updateCharts();
+renderHistory();
 }
 
 // UPDATE
@@ -338,6 +347,9 @@ data:{
     }]
 },
 options:{
+    layout:{
+        padding:{top:25}
+    },
     plugins:{
         legend:{display:false},
         tooltip:{enabled:false}
@@ -358,7 +370,7 @@ options:{
             const ctx=chart.ctx;
 
             ctx.save();
-            ctx.font="11px Arial";
+            ctx.font="12px Arial";
             ctx.textAlign="center";
 
             chart.data.datasets.forEach((dataset,i)=>{
@@ -366,9 +378,11 @@ options:{
                     let value=dataset.data[index];
 
                     ctx.fillStyle="#ffffff";
-                    let text=value.toFixed(1)+"%";
-
-                    ctx.fillText(text,bar.x,bar.y-8);
+                    ctx.fillText(
+                        value.toFixed(1)+"%",
+                        bar.x,
+                        bar.y - 10
+                    );
                 });
             });
 
@@ -389,9 +403,11 @@ backgroundColor:[]
 }]
 },
 options:{
+responsive:true,
+maintainAspectRatio:false,
 plugins:{
 legend:{display:false},
-tooltip:{enabled:false}
+tooltip:{enabled:true}
 },
 scales:{
 y:{
@@ -399,27 +415,28 @@ beginAtZero:true,
 title:{display:true,text:"Cumulative Profit (USDT)"}
 },
 x:{
-title:{display:true,text:"Trade #"}
+title:{display:true,text:"Trade #"},
+ticks:{
+autoSkip:false
+}
 }
 },
-
 animation:{
 onComplete:function(){
 const chart=this;
 const ctx=chart.ctx;
-ctx.font="11px Arial";
+ctx.font="12px Arial";
 ctx.textAlign="center";
 
 chart.data.datasets.forEach((dataset,i)=>{
 chart.getDatasetMeta(i).data.forEach((bar,index)=>{
-let value=dataset.data[index];
+let value=Math.round(dataset.data[index]);
 
 ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
 
-// hiển thị + hoặc - trước số
-let text=(value>0?"+":"")+value.toFixed(2)+"$";
+let text=(value>0?"+":"")+value+"$";
 
-ctx.fillText(text,bar.x,bar.y-5);
+ctx.fillText(text,bar.x,bar.y-6);
 });
 });
 }
@@ -436,9 +453,23 @@ let lossrate=100-winrate;
 winChart.data.datasets[0].data=[winrate,lossrate];
 winChart.update();
 
-// PROFIT CHART
-profitChart.data.labels=profitHistory.map((_,i)=>i+1);
-profitChart.data.datasets[0].data=profitHistory;
+
+/* ===== PROFIT CHART ===== */
+
+// chỉ lấy 6 bar gần nhất
+let last6 = profitHistory.slice(-6);
+
+// labels theo index thật
+let startIndex = profitHistory.length - last6.length;
+
+profitChart.data.labels = last6.map((_,i)=> startIndex + i + 1);
+profitChart.data.datasets[0].data = last6;
+
+profitChart.data.datasets[0].backgroundColor =
+last6.map(v=> v>=0 ? "#00e676" : "#ff5252");
+
+profitChart.update();
+}
 
 // green >0, red nếu <0
 profitChart.data.datasets[0].backgroundColor=
