@@ -170,7 +170,7 @@ Trades: <span id="totalTrades">0</span>
 <canvas id="winChart" height="150"></canvas>
 
 <h3>Profit Chart</h3>
-<div class="chart-wrapper" style="height:260px;">
+<div id="profitWrapper" class="chart-wrapper" style="height:260px;">
     <canvas id="profitChart"></canvas>
 </div>
 
@@ -497,7 +497,6 @@ profitChart.data.datasets[0].backgroundColor =
     data.map(v => v >= 0 ? "#00e676" : "#ff5252");
 //Auto with
 let barWidth = 60; // độ rộng mỗi bar
-profitChart.canvas.style.width = (profitHistory.length * barWidth) + "px";
    
     profitChart.update();
  // AUTO SCROLL TO LAST BAR
