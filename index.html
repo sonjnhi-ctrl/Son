@@ -468,12 +468,6 @@ profitChart.data.datasets[0].data = last6;
 profitChart.data.datasets[0].backgroundColor =
 last6.map(v=> v>=0 ? "#00e676" : "#ff5252");
 
-profitChart.update();
-}
-
-// green >0, red nếu <0
-profitChart.data.datasets[0].backgroundColor=
-profitHistory.map(v=> v>=0 ? "#00e676" : "#ff5252");
   profitChart.update();
 }
 // REALTIME PRICE + FLASH
