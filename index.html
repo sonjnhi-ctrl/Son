@@ -74,14 +74,12 @@ border-radius:8px;
 
 <h2>Pro Futures Risk Calculator</h2>
 
-<!-- REALTIME PRICE -->
 <div class="price-box">
 <div id="btc"></div>
 <div id="eth"></div>
 <div id="sol"></div>
 </div>
 
-<!-- WALLET -->
 <div class="wallet-box">
 <input type="number" id="walletInput" placeholder="Set Wallet USDT">
 <button class="small-btn" onclick="setWallet()">SET</button>
@@ -95,13 +93,6 @@ Win: <span class="green" id="winPercent">0%</span> |
 Loss: <span class="red" id="lossPercent">0%</span> |
 Trades: <span id="totalTrades">0</span>
 </div>
-
-<label>Coin</label>
-<select id="coin">
-<option value="BTCUSDT">BTC</option>
-<option value="ETHUSDT">ETH</option>
-<option value="SOLUSDT">SOL</option>
-</select>
 
 <label>Direction</label>
 <select id="direction">
@@ -144,10 +135,10 @@ Trades: <span id="totalTrades">0</span>
 let wallet=0;
 let wins=0;
 let losses=0;
-let lastProfit=0;
-let lastLoss=0;
+let lastProfit=null;
+let lastLoss=null;
 
-// LOAD HISTORY
+// LOAD DATA
 window.onload=function(){
 let data=JSON.parse(localStorage.getItem("tradeData"))||{};
 wallet=data.wallet||0;
@@ -176,20 +167,29 @@ setInterval(loadPrices,5000);
 
 // WALLET
 function setWallet(){
-wallet=parseFloat(document.getElementById("walletInput").value)||0;
+let value=parseFloat(document.getElementById("walletInput").value);
+if(isNaN(value) || value<=0){
+alert("Enter valid wallet amount");
+return;
+}
+wallet=value;
 saveData();
 updateStats();
 }
 
 function resetWallet(){
 localStorage.removeItem("tradeData");
+localStorage.removeItem("history");
 wallet=0;
 wins=0;
 losses=0;
+lastProfit=null;
+lastLoss=null;
 updateStats();
 renderHistory();
 }
 
+// UPDATE STATS
 function updateStats(){
 document.getElementById("walletBalance").innerText=wallet.toFixed(2);
 let total=wins+losses;
@@ -203,6 +203,12 @@ document.getElementById("totalTrades").innerText=total;
 
 // CALCULATE
 function calculate(){
+
+if(wallet<=0){
+alert("Set wallet first");
+return;
+}
+
 let entry=parseFloat(document.getElementById("entry").value);
 let tp=parseFloat(document.getElementById("tp").value);
 let sl=parseFloat(document.getElementById("sl").value);
@@ -244,6 +250,12 @@ document.getElementById("output").innerHTML=
 
 // SAVE
 function saveTrade(){
+
+if(lastProfit===null){
+alert("Press CALCULATE first");
+return;
+}
+
 let result=document.getElementById("tradeResult").value;
 
 if(result==="win"){
@@ -265,6 +277,9 @@ localStorage.setItem("history",JSON.stringify(history));
 saveData();
 updateStats();
 renderHistory();
+
+lastProfit=null;
+lastLoss=null;
 }
 
 function renderHistory(){
