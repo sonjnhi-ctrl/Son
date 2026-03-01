@@ -382,10 +382,12 @@ type:"bar",
 data:{
     labels:["Win","Loss"],
     datasets:[{
-        data:[0,0],
-        backgroundColor:["#00e676","#ff5252"],
-        barThickness:30
-    }]
+    data:[0,0],
+    backgroundColor:["#00e676","#ff5252"],
+   // WINRATE SIZE
+    categoryPercentage: 1.0,
+    barPercentage: 1.0
+}]
 },
 options:{
     layout:{
@@ -459,11 +461,11 @@ type: "bar",
 data: {
     labels: [],
     datasets:[{
-data:[],
-backgroundColor:[],
-barPercentage: 0.6, // Do Day Thanh Bar
-categoryPercentage: 0.6 // Khoang Canh Bar
-}]
+    data:profitHistory,
+    backgroundColor:colors,
+    barThickness: 12,
+    maxBarThickness: 12
+   }]
 },
 options: {
     responsive: true,
