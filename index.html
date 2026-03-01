@@ -453,23 +453,30 @@ let lossrate=100-winrate;
 winChart.data.datasets[0].data=[winrate,lossrate];
 winChart.update();
 
+function updateCharts(){
+
+let total = wins + losses;
+let winrate = total ? (wins / total * 100) : 0;
+let lossrate = 100 - winrate;
+
+winChart.data.datasets[0].data = [winrate, lossrate];
+winChart.update();
 
 /* ===== PROFIT CHART ===== */
 
-// chỉ lấy 6 bar gần nhất
 let last6 = profitHistory.slice(-6);
-
-// labels theo index thật
 let startIndex = profitHistory.length - last6.length;
 
 profitChart.data.labels = last6.map((_,i)=> startIndex + i + 1);
 profitChart.data.datasets[0].data = last6;
 
 profitChart.data.datasets[0].backgroundColor =
-last6.map(v=> v>=0 ? "#00e676" : "#ff5252");
+    last6.map(v=> v>=0 ? "#00e676" : "#ff5252");
 
-  profitChart.update();
+profitChart.update();
 }
+
+
 // REALTIME PRICE + FLASH
 async function fetchPrices(){
 
