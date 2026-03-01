@@ -319,7 +319,8 @@ history.push({
 time:new Date().toLocaleString(),
 timestamp:Date.now(),
 result:result,
-wallet:wallet.toFixed(2)
+wallet:wallet.toFixed(2),
+profit: profit   // ADD THEM PROFIT
 });
 
 localStorage.setItem("history",JSON.stringify(history));
@@ -338,9 +339,20 @@ let history=JSON.parse(localStorage.getItem("history"))||[];
 let html="";
 history.slice().reverse().forEach(h=>{
 let color=h.result==="win"?"green":"red";
-html+="<div class='"+color+"'>"+h.time+
+let profitText = "";
+    
+  //HIEN THI PnL
+if(h.profit !== undefined){
+    let sign = h.profit > 0 ? "+" : "";
+    profitText = " | PnL: " + sign + formatMoney(h.profit) + "$";
+}
+html+="<div class='"+color+"'>"
++h.time+
 " - "+h.result.toUpperCase()+
-" - Wallet: $"+h.wallet+"</div>";
+profitText+
+" - Wallet: $"+h.wallet+
+"</div>";
+    
 });
 historyDiv=document.getElementById("history");
 historyDiv.innerHTML=html;
