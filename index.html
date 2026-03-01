@@ -150,7 +150,7 @@ Trades: <span id="totalTrades">0</span>
 <canvas id="winChart" height="120"></canvas>
 
 <h3>Profit Chart</h3>
-<canvas id="profitChart" height="320"></canvas>
+<canvas id="profitChart" height="250"></canvas>
 
 <h3>Trade History</h3>
 <div id="history"></div>
@@ -431,18 +431,24 @@ let value=dataset.data[index];
 
 ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
 
-// hiển thị + hoặc - trước số
-let rounded = Math.round(value);
-let text = (rounded > 0 ? "+" : "") + rounded + "$";
+let text=(value>0?"+":"")+value.toFixed(2)+"$";
 
-ctx.fillText(text,bar.x,bar.y-5);
-});
-});
+// nếu dương → vẽ phía trên cột
+if(value>=0){
+    ctx.fillText(text, bar.x, bar.y - 8);
 }
+// nếu âm → vẽ phía dưới cột
+else{
+    ctx.fillText(text, bar.x, bar.y + 15);
 }
-}
+
 });
 
+});
+
+ctx.restore();
+}
+}
 function updateCharts(){
 
     let total = wins + losses;
