@@ -384,9 +384,7 @@ data:{
     datasets:[{
     data:[0,0],
     backgroundColor:["#00e676","#ff5252"],
-   // WINRATE SIZE
-    categoryPercentage: 0.3,
-    barPercentage: 0.3
+    barThickness: 18
 }]
 },
 options:{
@@ -398,15 +396,17 @@ options:{
         tooltip:{enabled:false}
     },
     scales:{
-        y:{
-            title:{display:true,text:"Percentage (%)"},
-            min:0,
-            max:100
-        },
-        x:{
-            title:{display:true,text:"Result"}
-        }
+    y:{
+        title:{display:true,text:"Percentage (%)"},
+        min:0,
+        max:100
     },
+    x:{
+        offset:false,
+        grid:{display:false},
+        title:{display:true,text:"Result"}
+    }
+},
     animation:{
         onComplete:function(){
             const chart=this;
