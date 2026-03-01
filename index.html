@@ -449,11 +449,6 @@ else{
 
 });
 
-});
-
-ctx.restore();
-}
-}
 function updateCharts(){
 
     let total = wins + losses;
@@ -462,7 +457,7 @@ function updateCharts(){
 
     winChart.data.datasets[0].data = [winrate, lossrate];
     winChart.update();
-}
+
    // PROFIT CHART UPDATE
 let maxBars = 6;
 
