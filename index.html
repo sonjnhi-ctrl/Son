@@ -420,20 +420,25 @@ title:{display:true,text:"Number"}
 
 animation:{
 onComplete:function(){
+
 const chart=this;
 const ctx=chart.ctx;
+ctx.save();
+
 ctx.font="11px Arial";
 ctx.textAlign="center";
 
 chart.data.datasets.forEach((dataset,i)=>{
+
 chart.getDatasetMeta(i).data.forEach((bar,index)=>{
+
 let value=dataset.data[index];
 
 ctx.fillStyle=value>=0 ? "#00e676" : "#ff5252";
 
 let text=(value>0?"+":"")+value.toFixed(2)+"$";
 
-// nếu dương → vẽ phía trên cột
+//  nếu dương → vẽ phía trên cột
 if(value>=0){
     ctx.fillText(text, bar.x, bar.y - 8);
 }
