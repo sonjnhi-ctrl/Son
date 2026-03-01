@@ -15,7 +15,15 @@ background:#0e0e0e;
 color:white;
 padding:20px;
 }
+.flash-up{
+    color:#00e676 !important;
+    transition:0.2s;
+}
 
+.flash-down{
+    color:#ff5252 !important;
+    transition:0.2s;
+}
 .price-box{
 display:flex;
 justify-content:space-between;
@@ -150,6 +158,7 @@ Trades: <span id="totalTrades">0</span>
 let wallet=0;
 let wins=0;
 let losses=0;
+let lastPrices={};
 let lastProfit=null;
 let lastLoss=null;
 let profitHistory=[]
@@ -436,7 +445,54 @@ profitChart.data.datasets[0].backgroundColor=
 profitHistory.map(v=> v>=0 ? "#00e676" : "#ff5252");
   profitChart.update();
 }
+// REALTIME PRICE + FLASH
+async function fetchPrices(){
 
+    const symbols=["BTCUSDT","ETHUSDT","SOLUSDT"];
+
+    for(let s of symbols){
+
+        try{
+            let res=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+s);
+            let data=await res.json();
+
+            let price=parseFloat(data.lastPrice);
+            let change=parseFloat(data.priceChangePercent).toFixed(2);
+
+            let id=s.slice(0,3).toLowerCase();
+            let element=document.getElementById(id);
+
+            let color=change>=0?"green":"red";
+            let sign=change>=0?"+":"";
+
+            element.innerHTML=
+                "<b>"+s.slice(0,3)+"</b>: " +
+                "<span id='"+id+"-price'>$"+price.toFixed(2)+"</span> " +
+                "<span class='"+color+"'>("+sign+change+"%)</span>";
+
+            let priceEl=document.getElementById(id+"-price");
+
+            if(lastPrices[s]){
+                if(price>lastPrices[s]){
+                    priceEl.classList.add("flash-up");
+                    setTimeout(()=>priceEl.classList.remove("flash-up"),500);
+                }
+                if(price<lastPrices[s]){
+                    priceEl.classList.add("flash-down");
+                    setTimeout(()=>priceEl.classList.remove("flash-down"),500);
+                }
+            }
+
+            lastPrices[s]=price;
+
+        }catch(e){
+            console.log(e);
+        }
+    }
+}
+
+setInterval(fetchPrices,2000);
+fetchPrices();
 </script>
 </body>
 </html>
