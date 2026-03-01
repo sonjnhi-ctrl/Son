@@ -448,7 +448,7 @@ function updateCharts(){
 
 let total=wins+losses;
 let winrate=total?(wins/total*100):0;
-let lossrate=total?(loss/total*100):0;
+let lossrate=total?(losses/total*100):0;
 
 winChart.data.datasets[0].data=[winrate,lossrate];
 winChart.update();
