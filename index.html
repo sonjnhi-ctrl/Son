@@ -6,6 +6,8 @@
 
 <title>Pro Futures Risk Calculator</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body{
 font-family:Arial;
@@ -63,6 +65,13 @@ margin-top:20px;
 font-size:13px;
 max-height:200px;
 overflow:auto;
+background:#111;
+padding:10px;
+border-radius:8px;
+}
+
+canvas{
+margin-top:20px;
 background:#111;
 padding:10px;
 border-radius:8px;
@@ -128,6 +137,12 @@ Trades: <span id="totalTrades">0</span>
 
 <div id="output"></div>
 
+<h3>Winrate Chart</h3>
+<canvas id="winChart" height="120"></canvas>
+
+<h3>Profit Chart</h3>
+<canvas id="profitChart" height="120"></canvas>
+
 <h3>Trade History</h3>
 <div id="history"></div>
 
@@ -137,77 +152,65 @@ let wins=0;
 let losses=0;
 let lastProfit=null;
 let lastLoss=null;
+let walletHistory=[];
 
-// LOAD DATA
+// LOAD
 window.onload=function(){
 let data=JSON.parse(localStorage.getItem("tradeData"))||{};
 wallet=data.wallet||0;
 wins=data.wins||0;
 losses=data.losses||0;
+walletHistory=data.walletHistory||[wallet];
+
+cleanOldHistory();
 updateStats();
 renderHistory();
+updateCharts();
 }
 
-// REALTIME PRICE
-async function loadPrices(){
-let coins=["BTCUSDT","ETHUSDT","SOLUSDT"];
-for(let c of coins){
-let res=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+c);
-let data=await res.json();
-let price=parseFloat(data.lastPrice).toFixed(2);
-let change=parseFloat(data.priceChangePercent).toFixed(2);
-let color=change>=0?"green":"red";
-document.getElementById(c.slice(0,3).toLowerCase()).innerHTML=
-c.slice(0,3)+": $"+price+
-" <span class='"+color+"'>("+change+"%)</span>";
+// CLEAN HISTORY > 1 YEAR
+function cleanOldHistory(){
+let history=JSON.parse(localStorage.getItem("history"))||[];
+let oneYear=365*24*60*60*1000;
+let now=Date.now();
+
+history=history.filter(h=> now - h.timestamp < oneYear);
+
+localStorage.setItem("history",JSON.stringify(history));
 }
-}
-loadPrices();
-setInterval(loadPrices,5000);
 
 // WALLET
 function setWallet(){
-let value=parseFloat(document.getElementById("walletInput").value);
-if(isNaN(value) || value<=0){
-alert("Enter valid wallet amount");
-return;
-}
+let value=parseFloat(walletInput.value);
+if(isNaN(value)||value<=0){alert("Invalid wallet");return;}
 wallet=value;
+walletHistory=[wallet];
 saveData();
 updateStats();
+updateCharts();
 }
 
 function resetWallet(){
-localStorage.removeItem("tradeData");
-localStorage.removeItem("history");
-wallet=0;
-wins=0;
-losses=0;
-lastProfit=null;
-lastLoss=null;
-updateStats();
-renderHistory();
+localStorage.clear();
+location.reload();
 }
 
-// UPDATE STATS
+// UPDATE
 function updateStats(){
-document.getElementById("walletBalance").innerText=wallet.toFixed(2);
+walletBalance.innerText=wallet.toFixed(2);
 let total=wins+losses;
 let winrate=total?((wins/total)*100).toFixed(1):0;
 let lossrate=total?(100-winrate).toFixed(1):0;
 
-document.getElementById("winPercent").innerText=winrate+"%";
-document.getElementById("lossPercent").innerText=lossrate+"%";
-document.getElementById("totalTrades").innerText=total;
+winPercent.innerText=winrate+"%";
+lossPercent.innerText=lossrate+"%";
+totalTrades.innerText=total;
 }
 
 // CALCULATE
 function calculate(){
 
-if(wallet<=0){
-alert("Set wallet first");
-return;
-}
+if(wallet<=0){alert("Set wallet first");return;}
 
 let entry=parseFloat(document.getElementById("entry").value);
 let tp=parseFloat(document.getElementById("tp").value);
@@ -221,15 +224,11 @@ return;
 }
 
 let riskCapital=wallet*riskPercent/100;
-
-let dir=document.getElementById("direction").value;
+let dir=direction.value;
 let priceRisk=dir==="long"?entry-sl:sl-entry;
 let priceReward=dir==="long"?tp-entry:entry-tp;
 
-if(priceRisk<=0){
-alert("Invalid SL");
-return;
-}
+if(priceRisk<=0){alert("Invalid SL");return;}
 
 let positionSize=riskCapital/priceRisk;
 let positionValue=positionSize*entry;
@@ -240,7 +239,7 @@ let potentialProfit=priceReward*positionSize;
 lastProfit=potentialProfit;
 lastLoss=riskCapital;
 
-document.getElementById("output").innerHTML=
+output.innerHTML=
 "Risk Capital: $"+riskCapital.toFixed(2)+"<br>"+
 "Margin Used: $"+margin.toFixed(2)+"<br>"+
 "Potential Profit: $"+potentialProfit.toFixed(2)+"<br>"+
@@ -251,12 +250,9 @@ document.getElementById("output").innerHTML=
 // SAVE
 function saveTrade(){
 
-if(lastProfit===null){
-alert("Press CALCULATE first");
-return;
-}
+if(lastProfit===null){alert("Press CALCULATE first");return;}
 
-let result=document.getElementById("tradeResult").value;
+let result=tradeResult.value;
 
 if(result==="win"){
 wallet+=lastProfit;
@@ -266,17 +262,22 @@ wallet-=lastLoss;
 losses++;
 }
 
+walletHistory.push(wallet);
+
 let history=JSON.parse(localStorage.getItem("history"))||[];
 history.push({
 time:new Date().toLocaleString(),
+timestamp:Date.now(),
 result:result,
 wallet:wallet.toFixed(2)
 });
+
 localStorage.setItem("history",JSON.stringify(history));
 
 saveData();
 updateStats();
 renderHistory();
+updateCharts();
 
 lastProfit=null;
 lastLoss=null;
@@ -291,16 +292,71 @@ html+="<div class='"+color+"'>"+h.time+
 " - "+h.result.toUpperCase()+
 " - Wallet: $"+h.wallet+"</div>";
 });
-document.getElementById("history").innerHTML=html;
+historyDiv=document.getElementById("history");
+historyDiv.innerHTML=html;
 }
 
 function saveData(){
 localStorage.setItem("tradeData",JSON.stringify({
 wallet:wallet,
 wins:wins,
-losses:losses
+losses:losses,
+walletHistory:walletHistory
 }));
 }
+
+// CHARTS
+let winChart=new Chart(document.getElementById("winChart"),{
+type:"bar",
+data:{
+labels:["Win","Loss"],
+datasets:[{
+label:"Winrate %",
+data:[0,0],
+backgroundColor:["#00e676","#ff5252"]
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{
+y:{title:{display:true,text:"Percentage (%)"},min:0,max:100},
+x:{title:{display:true,text:"Result"}}
+}
+}
+});
+
+let profitChart=new Chart(document.getElementById("profitChart"),{
+type:"line",
+data:{
+labels:[],
+datasets:[{
+label:"Wallet (USDT)",
+data:[],
+borderColor:"#00c853",
+fill:false
+}]
+},
+options:{
+scales:{
+y:{title:{display:true,text:"USDT"}},
+x:{title:{display:true,text:"Trade #"}}
+}
+}
+});
+
+function updateCharts(){
+let total=wins+losses;
+let winrate=total?(wins/total*100):0;
+let lossrate=100-winrate;
+
+winChart.data.datasets[0].data=[winrate,lossrate];
+winChart.update();
+
+profitChart.data.labels=walletHistory.map((_,i)=>i);
+profitChart.data.datasets[0].data=walletHistory;
+profitChart.update();
+}
+
 </script>
 </body>
 </html>
