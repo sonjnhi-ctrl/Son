@@ -34,9 +34,7 @@ padding:20px;
     overflow-y: hidden;
 }
 
-#profitChart {
-    min-width: 800px; /* càng lớn càng xem được nhiều bar */
-}
+
 .flash-up{
     color:#00e676 !important;
     transition:0.2s;
@@ -172,7 +170,7 @@ Trades: <span id="totalTrades">0</span>
 <canvas id="winChart" height="150"></canvas>
 
 <h3>Profit Chart</h3>
-<div class="chart-wrapper">
+<div class="chart-wrapper" style="height:260px;">
     <canvas id="profitChart"></canvas>
 </div>
 
@@ -235,7 +233,7 @@ wins=0;
 losses=0;
 profitHistory=[];
 cumulativeProfit=0;
-
+saveData(); 
 updateStats();
 updateCharts();
 renderHistory();
@@ -426,7 +424,10 @@ data:[],
 backgroundColor:[]
 }]
 },
-options:{
+options: {
+    responsive: true,
+    maintainAspectRatio: false
+}
 plugins:{
 legend:{display:false},
 tooltip:{enabled:false}
