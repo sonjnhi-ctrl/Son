@@ -414,15 +414,37 @@ options:{
 }
 });
 
+//LAM TRON 1000=1K$
+function formatMoney(value){
+
+    let abs = Math.abs(value);
+
+    if(abs >= 1000000000){
+        return (value/1000000000).toFixed(1) + "B";
+    }
+
+    if(abs >= 1000000){
+        return (value/1000000).toFixed(1) + "M";
+    }
+
+    if(abs >= 1000){
+        return (value/1000).toFixed(1) + "K";
+    }
+
+    return Math.round(value).toString();
+}
+    
 // PROFIT CHART
 let profitChart = new Chart(document.getElementById("profitChart"), {
 type: "bar",
 data: {
     labels: [],
-    datasets: [{
-        data: [],
-        backgroundColor: []
-    }]
+    datasets:[{
+data:[],
+backgroundColor:[],
+barPercentage: 0.6, // Do Day Thanh Bar
+categoryPercentage: 0.6 // Khoang Canh Bar
+}]
 },
 options: {
     responsive: true,
@@ -455,7 +477,7 @@ options: {
             const ctx = chart.ctx;
 
             ctx.save();
-            ctx.font = "11px Arial";
+            ctx.font = "9px Arial";
             ctx.textAlign = "center";
 
             chart.data.datasets.forEach((dataset, i) => {
@@ -464,7 +486,8 @@ options: {
                     let value = dataset.data[index];
                     ctx.fillStyle = value >= 0 ? "#00e676" : "#ff5252";
 
-                    let text = (value > 0 ? "+" : "") + Math.round(value) + "$";
+                    let formatted = formatMoney(value);
+let text = (value>0?"+":"") + formatted + "$";
 
                     if (value >= 0) {
                         ctx.fillText(text, bar.x, bar.y - 4);
@@ -491,11 +514,36 @@ function updateCharts(){
     winChart.update();
 
    // PROFIT CHART UPDATE
-let data = profitHistory; //Full hitstory
-let startIndex = 0;
+// ==== LIMIT 6 BAR DISPLAY ====
+let fullData = profitHistory;
+let maxBars = 6;
 
-profitChart.data.labels = data.map((_, i) => i + 1);
+// lấy 6 phần tử cuối
+let data = fullData.slice(-maxBars);
+
+// tạo label đúng theo index thật
+// ==== LIMIT 6 BAR DISPLAY ====
+let fullData = profitHistory;
+let maxBars = 6;
+
+// lấy 6 phần tử cuối
+let data = fullData.slice(-maxBars);
+
+// tạo label đúng theo index thật
+
+// ==== LIMIT 6 BAR DISPLAY ====
+let fullData = profitHistory;
+let maxBars = 6;
+
+// lấy 6 phần tử cuối
+let data = fullData.slice(-maxBars);
+
+// tạo label đúng theo index thật
+let startIndex = fullData.length - data.length;
+
+profitChart.data.labels = data.map((_, i) => startIndex + i + 1);
 profitChart.data.datasets[0].data = data;
+
 profitChart.data.datasets[0].backgroundColor =
     data.map(v => v >= 0 ? "#00e676" : "#ff5252");
    
