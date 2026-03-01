@@ -14,6 +14,11 @@ background:#0e0e0e;
 color:white;
 padding:20px;
 }
+   //WALLET COLOR
+.wallet-label{
+color:#ffc107; 
+}
+    
 .btn-reset {
     background: #ff4444;
     color: white;
@@ -123,7 +128,10 @@ height:250px;
 <button class="small-btn" onclick="resetWallet()">RESET</button>
 </div>
 
-<div><b>Wallet Balance: $<span id="walletBalance">0</span></b></div>
+<div>
+<b><span class="wallet-label">Wallet Balance:</span> 
+$<span id="walletBalance">0</span></b>
+</div>
 
 <div style="margin-top:10px;">
 Win: <span class="green" id="winPercent">0%</span> |
