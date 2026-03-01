@@ -385,8 +385,8 @@ data:{
     data:[0,0],
     backgroundColor:["#00e676","#ff5252"],
    // WINRATE SIZE
-    categoryPercentage: 1.0,
-    barPercentage: 1.0
+    categoryPercentage: 0.3,
+    barPercentage: 0.3
 }]
 },
 options:{
@@ -462,10 +462,10 @@ data: {
     labels: [],
     datasets:[{
     data:profitHistory,
-    backgroundColor:colors,
+    backgroundColor: profitHistory.map(v => v >= 0 ? "#00e676" : "#ff5252"),
     barThickness: 12,
     maxBarThickness: 12
-   }]
+}]
 },
 options: {
     responsive: true,
