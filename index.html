@@ -15,6 +15,28 @@ background:#0e0e0e;
 color:white;
 padding:20px;
 }
+.btn-reset {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.btn-reset:hover {
+    opacity: 0.9;
+}
+.chart-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#profitChart {
+    min-width: 800px; /* càng lớn càng xem được nhiều bar */
+}
 .flash-up{
     color:#00e676 !important;
     transition:0.2s;
@@ -150,7 +172,9 @@ Trades: <span id="totalTrades">0</span>
 <canvas id="winChart" height="150"></canvas>
 
 <h3>Profit Chart</h3>
-<canvas id="profitChart" height="200"></canvas>
+<div class="chart-wrapper">
+    <canvas id="profitChart"></canvas>
+</div>
 
 <h3>Trade History</h3>
 <div id="history"></div>
@@ -274,7 +298,6 @@ output.innerHTML=
 
 // SAVE
 function saveTrade(){
-
 if(lastProfit===null){alert("Press CALCULATE first");return;}
 
 let result=tradeResult.value;
